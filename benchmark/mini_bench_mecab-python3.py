@@ -15,15 +15,17 @@
 # limitations under the License.
 
 setup = """
-from janome.tokenizer import Tokenizer
-t = Tokenizer()
+from MeCab import Tagger
+t = Tagger('-Ochasen')
 with open('text_lemon.txt', encoding='utf-8') as f:
     s = f.read()
 """
 
 stmt = """
-for token in t.tokenize(s):
-    pass
+node = t.parseToNode(s)
+while node:
+    node.surface
+    node = node.next
 """
 
 
@@ -31,10 +33,10 @@ if __name__ == '__main__':
     import timeit, sys
     n = int(sys.argv[1]) if len(sys.argv) > 1 else 10
 
-    print("** initialize Tokenizer object **")
-    print(timeit.timeit(stmt='Tokenizer()', setup='from janome.tokenizer import Tokenizer', number=1))
+    print("** initialize Tagger object **")
+    print(timeit.timeit(stmt='Tagger("-Ochasen")', setup='from MeCab import Tagger', number=1))
 
-    print("** execute tokenize() %d times **" % n)
+    print("** execute parse() %d times **" % n)
     res = timeit.repeat(stmt=stmt, setup=setup, repeat=1, number=n)
     for i, x in enumerate(res):
         print("repeat %d: %f" % (i, x / n))

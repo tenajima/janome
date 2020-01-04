@@ -15,24 +15,22 @@
 # limitations under the License.
 
 setup = """
-from janome.tokenizer import Tokenizer
+from janome.wrappers.mecab import Tokenizer
 t = Tokenizer()
 with open('text_lemon.txt', encoding='utf-8') as f:
     s = f.read()
 """
 
 stmt = """
-for token in t.tokenize(s):
-    pass
+(token.surface for token in t.tokenize(s))
 """
-
 
 if __name__ == '__main__':
     import timeit, sys
     n = int(sys.argv[1]) if len(sys.argv) > 1 else 10
 
     print("** initialize Tokenizer object **")
-    print(timeit.timeit(stmt='Tokenizer()', setup='from janome.tokenizer import Tokenizer', number=1))
+    print(timeit.timeit(stmt='Tokenizer()', setup='from janome.wrappers.mecab import Tokenizer', number=1))
 
     print("** execute tokenize() %d times **" % n)
     res = timeit.repeat(stmt=stmt, setup=setup, repeat=1, number=n)
