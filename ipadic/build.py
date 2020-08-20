@@ -38,6 +38,7 @@ import time
 import logging
 import os
 import sys
+from tqdm import tqdm
 from io import open
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, parent_dir)
@@ -78,7 +79,7 @@ def collect(dicdir, enc, outdir, workdir):
     # split inputs
     _part = []
     _cnt = 0
-    for surface, mid in inputs:
+    for surface, mid in tqdm(inputs, total=inputs_size):
         if len(_part) >= 200000:
             with open(os.path.join(workdir, 'input%d.pkl' % _cnt), 'wb') as f:
                 pickle.dump(_part, f)
@@ -95,9 +96,11 @@ def collect(dicdir, enc, outdir, workdir):
     buckets = {}
     bucket_offset = 0
     morph_id = 0
-    for path in csv_files:
+    for i, path in enumerate(csv_files):
+        number_of_line = sum(1 for line in open(path))
+        logger.info(f"{i+1} / {len(csv_files)}")
         with open(path, encoding=enc) as f:
-            for line in f:
+            for line in tqdm(f, total=number_of_line):
                 line = line.rstrip()
                 surface, left_id, right_id, cost, \
                     pos_major, pos_minor1, pos_minor2, pos_minor3, \
